@@ -1,9 +1,22 @@
 const User = require("../../models/User");
+const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken")
 
-exports.signup = async (req, res) => {
+
+function createToken(user){
+  const payload = {
+    ...user
+  }
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' })
+}
+
+exports.signup = async (req, res, next) => {
   try {
-    const newUser = await User.create(req.body);
-    res.status(201).json(newUser);
+    req.body.password = await bcrypt.hash(req.body.password, 10)
+    const newUser = await User.create(req.body)
+    const token = createToken(newUser)
+    console.log("creating")
+    res.status(201).json({token});
   } catch (err) {
     next(err);
   }
@@ -11,6 +24,8 @@ exports.signup = async (req, res) => {
 
 exports.signin = async (req, res) => {
   try {
+    const token = createToken(req.user)
+    return res.status(201).json({token})
   } catch (err) {
     res.status(500).json("Server Error");
   }
