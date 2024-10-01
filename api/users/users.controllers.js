@@ -4,8 +4,10 @@ const jwt = require("jsonwebtoken")
 
 
 function createToken(user){
+  // user is type of document so I do payload object to turn to object token
   const payload = {
-    ...user
+    _id: user._id,
+    username: user.username
   }
   return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' })
 }

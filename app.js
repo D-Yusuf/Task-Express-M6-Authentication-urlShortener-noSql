@@ -1,7 +1,7 @@
 const express = require("express");
 const connectDb = require("./database");
 const passport = require("passport")
-const {localStrategy} = require("./middlewares/passport")
+const {localStrategy, JwtStrategy} = require("./middlewares/passport")
 const urlRoutes = require("./api/urls/urls.routes");
 const userRoutes = require("./api/users/users.routes");
 const notFoundHandler = require("./middlewares/notFoundHandler");
@@ -13,6 +13,7 @@ connectDb();
 app.use(express.json());
 app.use(passport.initialize())
 passport.use("local", localStrategy)
+passport.use("jwt", JwtStrategy)
 
 app.use("/urls", urlRoutes);
 app.use(userRoutes);
